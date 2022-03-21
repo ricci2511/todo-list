@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;600&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a966b964c6.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <header>
+        <h1>TO DO LIST</h1>
+    </header>
+
+    <main>
+        <nav>
+            <div class="default-list">
+                <button class="default-list-button">Home</button>
+                <button class="default-list-button">Today</button>
+                <button class="default-list-button">This week</button>
+            </div>
+            <div class="projects-list">
+                <h2>Projects</h2>
+                <button id="add-project-button">Add Project</button>
+            </div>
+        </nav>
+
+        <div class="project-view">
+            <h2 id="project-title">Home</h2>
+            <div class="add-task-popup hidden">
+                <input type="text" id="task-title" placeholder="Title">
+                <input type="text" id="task-description" placeholder="Description">
+                <input type="date" id="task-date">
+                <div class="add-task-popup-buttons">
+                    <button class="add-task-popup-button">Add</button>
+                    <button class="cancel-task-popup-button">Cancel</button>
+                </div>
+            </div>
+            <div class="task-buttons">
+                <button class="task-button" id="add-task-button">Add Task</button>
+                <button class="task-button" id="clear-task-button">Clear</button>
+            </div>
+            <div class="tasks-list">
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Copyright © 2022 ricci2511</p>
+    </footer>
+    <script src="main.js"></script>
+</body>
+
+</html>
