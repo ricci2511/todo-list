@@ -1,3 +1,3 @@
-import { loadContent } from './modules/DOM';
+import loadContent from './modules/DOM';
 
 loadContent();
