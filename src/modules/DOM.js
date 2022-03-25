@@ -11,7 +11,6 @@ const myStorage = new LocalStorage();
 const displayTaskElements = (tasksArr = []) => {
   const tasksList = document.querySelector('.tasks-list');
 
-  console.log(tasksArr);
   tasksList.innerHTML = tasksArr.map((task, i) => `
         <div class="task" data-index=${i}>
             <div class="left-task-options">
@@ -50,7 +49,7 @@ const displayTaskDetails = (task) => {
     `;
 
   DOMPurify.sanitize(taskDetailsPopup);
-  document.body.appendChild(taskDetailsPopup);
+  document.querySelector('main').appendChild(taskDetailsPopup);
 };
 
 const editTask = () => {
@@ -72,32 +71,21 @@ const editTask = () => {
 };
 
 const handleNavButtons = (button) => {
-  const newTasksArr = [];
   const navButtonText = button.textContent;
   document.querySelector('#project-title').textContent = navButtonText;
+  let tasksByDateArr = [];
 
-  const displayTasksByDate = (task) => {
-    const taskDate = new Date(task.dueDate);
+  if (navButtonText === 'Today') {
+    tasksByDateArr = myStorage.tasks.filter((task) => isToday(new Date(task.dueDate)));
+    return displayTaskElements(tasksByDateArr);
+  }
 
-    if (navButtonText === 'Today') {
-      if (isToday(taskDate)) {
-        newTasksArr.push(task);
-        displayTaskElements(newTasksArr);
-      }
-    } else if (navButtonText === 'This week') {
-      if (isThisWeek(taskDate)) {
-        newTasksArr.push(task);
-        displayTaskElements(newTasksArr);
-      }
-    } else {
-      displayTaskElements(
-        myStorage.tasks,
-        document.querySelector('.tasks-list'),
-      );
-    }
-  };
+  if (navButtonText === 'This week') {
+    tasksByDateArr = myStorage.tasks.filter((task) => isThisWeek(new Date(task.dueDate)));
+    return displayTaskElements(tasksByDateArr);
+  }
 
-  myStorage.tasks.forEach((task) => displayTasksByDate(task));
+  return displayTaskElements(myStorage.tasks);
 };
 
 const isTaskInputValid = (title, dueDate) => {
@@ -122,9 +110,7 @@ const isTaskInputValid = (title, dueDate) => {
 /* EVENT DELEGATION FACTORY FUNCTIONS */
 const defaultListButtonsEvent = (e) => {
   if (e.target.matches('.default-list-button')) {
-    const defaultListButtons = document.querySelectorAll(
-      '.default-list-button',
-    );
+    const defaultListButtons = document.querySelectorAll('.default-list-button');
     defaultListButtons.forEach((button) => button.classList.remove('active'));
     document.querySelector('.tasks-list').textContent = '';
     e.target.classList.add('active');
