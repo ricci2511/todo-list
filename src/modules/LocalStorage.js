@@ -1,4 +1,6 @@
-import { format } from 'date-fns';
+import {
+  format, isToday, isThisWeek,
+} from 'date-fns';
 import Task from './Task';
 
 export default class LocalStorage {
@@ -21,6 +23,18 @@ export default class LocalStorage {
     return this.tasks.find((task) => task.title === taskName);
   }
 
+  getTasksByDate(text) {
+    if (text === 'Today') {
+      return this.tasks.filter((task) => isToday(new Date(task.dueDate)));
+    }
+
+    if (text === 'This week') {
+      return this.tasks.filter((task) => isThisWeek(new Date(task.dueDate)));
+    }
+
+    return this.tasks;
+  }
+
   createTask(task) {
     // check if the created task already exists in LocalStorage
     if (!this.getTask(task.title)) {
@@ -33,9 +47,9 @@ export default class LocalStorage {
 
   removeTask(iconEl) {
     const taskTitle = iconEl.parentNode.parentNode.firstElementChild.children[1].innerHTML.replaceAll('"', '');
-    const taskObj = this.getTask(taskTitle);
+    const taskToDelete = this.getTask(taskTitle);
 
-    this.tasks.pop(taskObj);
+    this.tasks.splice(this.tasks.indexOf(taskToDelete), 1);
     LocalStorage.updateStorage(this.tasks);
   }
 
@@ -45,7 +59,5 @@ export default class LocalStorage {
 
   static clearStorage() {
     localStorage.clear();
-    // eslint-disable-next-line no-restricted-globals
-    location.reload();
   }
 }

@@ -1,5 +1,5 @@
 import {
-  isToday, isThisWeek, isPast, isValid,
+  isPast, isValid,
 } from 'date-fns';
 import DOMPurify from 'dompurify';
 import LocalStorage from './LocalStorage';
@@ -52,6 +52,11 @@ const displayTaskDetails = (task) => {
   document.querySelector('main').appendChild(taskDetailsPopup);
 };
 
+const checkActiveTabAndDisplayTasks = () => {
+  const activeTab = document.querySelector('.active').textContent;
+  displayTaskElements(myStorage.getTasksByDate(activeTab));
+};
+
 const editTask = () => {
   const taskTitle = document.querySelector('#task-details-title').value;
   const taskDescription = document.querySelector('#task-details-description').value;
@@ -67,25 +72,7 @@ const editTask = () => {
   taskToEdit.checked = isTaskDone;
 
   LocalStorage.updateStorage(myStorage.tasks);
-  displayTaskElements(myStorage.tasks);
-};
-
-const handleNavButtons = (button) => {
-  const navButtonText = button.textContent;
-  document.querySelector('#project-title').textContent = navButtonText;
-  let tasksByDateArr = [];
-
-  if (navButtonText === 'Today') {
-    tasksByDateArr = myStorage.tasks.filter((task) => isToday(new Date(task.dueDate)));
-    return displayTaskElements(tasksByDateArr);
-  }
-
-  if (navButtonText === 'This week') {
-    tasksByDateArr = myStorage.tasks.filter((task) => isThisWeek(new Date(task.dueDate)));
-    return displayTaskElements(tasksByDateArr);
-  }
-
-  return displayTaskElements(myStorage.tasks);
+  checkActiveTabAndDisplayTasks();
 };
 
 const isTaskInputValid = (title, dueDate) => {
@@ -114,12 +101,17 @@ const defaultListButtonsEvent = (e) => {
     defaultListButtons.forEach((button) => button.classList.remove('active'));
     document.querySelector('.tasks-list').textContent = '';
     e.target.classList.add('active');
-    handleNavButtons(e.target);
+    document.querySelector('#project-title').textContent = e.target.textContent;
+    checkActiveTabAndDisplayTasks();
   }
 };
 
 const clearTasksButtonEvent = (e) => {
-  if (e.target.matches('#clear-task-button')) LocalStorage.clearStorage();
+  if (e.target.matches('#clear-task-button')) {
+    LocalStorage.clearStorage();
+    // eslint-disable-next-line no-restricted-globals
+    location.reload();
+  }
 };
 
 const addTaskPopupEvent = (e) => {
@@ -141,7 +133,7 @@ const addTaskPopupButtonEvent = (e) => {
 
     if (isTaskInputValid(taskTitle, taskDate)) {
       myStorage.createTask(new Task(taskTitle, taskDescription, taskDate));
-      displayTaskElements(myStorage.tasks);
+      checkActiveTabAndDisplayTasks();
     }
   }
 };
@@ -167,11 +159,10 @@ const cancelEditButtonEvent = (e) => {
 
 const tasksCheckboxesEvent = (e) => {
   if (e.target.matches('.isChecked')) {
-    // eslint-disable-next-line prefer-destructuring
-    const index = e.target.parentElement.parentElement.dataset.index;
-    myStorage.tasks[index].checked = !myStorage.tasks[index].checked;
+    const taskObj = myStorage.getTask(e.target.nextElementSibling.innerText);
+    taskObj.checked = !taskObj.checked;
     LocalStorage.updateStorage(myStorage.tasks);
-    displayTaskElements(myStorage.tasks);
+    checkActiveTabAndDisplayTasks();
   }
 };
 
@@ -207,7 +198,7 @@ const loadContent = () => {
     deleteIconsEvent(e);
   });
 
-  displayTaskElements(myStorage.tasks);
+  checkActiveTabAndDisplayTasks();
 };
 
 export default loadContent;
